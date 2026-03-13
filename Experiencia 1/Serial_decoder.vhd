@@ -1,0 +1,93 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date: 13.03.2026 14:58:05
+-- Design Name: 
+-- Module Name: Serial_decoder - Behavioral
+-- Project Name: 
+-- Target Devices: 
+-- Tool Versions: 
+-- Description: 
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity Serial_decoder is
+    Port ( Bus_in : in STD_LOGIC_VECTOR (7 downto 0);
+           clk : in STD_LOGIC;
+           rst : in STD_LOGIC;
+           enable : out STD_LOGIC;
+           V0 : out STD_LOGIC_VECTOR (9 downto 0);
+           V1 : out STD_LOGIC_VECTOR (9 downto 0));
+end Serial_decoder;
+
+architecture Behavioral of Serial_decoder is
+
+signal V0_reg : std_logic_vector (9 downto 0);
+signal V1_reg : std_logic_vector (9 downto 0);
+signal H1 : std_logic;
+signal H2 : std_logic;
+signal H3 : std_logic;
+signal data : std_logic_vector (5 downto 0);
+
+begin
+
+process(clk)
+begin
+
+if rising_edge(clk) then
+    if rst = '1' then
+        V0_reg <= (others => '0');
+        V1_reg <= (others => '0');
+        enable <= '0';
+    else
+        H1 <= Bus_in(7);
+        H2 <= Bus_in(6);
+        H3 <= Bus_in(5);
+        data <= Bus_in(4 downto 0);
+        enable <= '0';
+        if H1 = '0' then
+            if H2 = '0' then
+                V0_reg(9 downto 5) <= data;
+            else
+                V0_reg(4 downto 0) <= data;
+                -- Añadir paridad ? 
+            end if;
+        
+        else
+            if H2 = '0' then
+                V1_reg(9 downto 5) <= data;
+            else
+                V1_reg(4 downto 0) <= data;
+                -- Añadir paridad ? 
+                enable <= '1';
+            end if;
+        end if;
+    end if;
+end if;
+end process;
+
+V0 <= V0_reg;
+V1 <= V1_reg;
+
+
+end Behavioral;

@@ -36,12 +36,15 @@ entity Decidir_voltaje is
            rst : in STD_LOGIC;
            V0 : in STD_LOGIC_VECTOR (9 downto 0);
            V1 : in STD_LOGIC_VECTOR (9 downto 0);
+           enable : in STD_LOGIC;
            Switch : in STD_LOGIC;
            V : out STD_LOGIC_VECTOR (9 downto 0);
            Led : out STD_LOGIC);
 end Decidir_voltaje;
 
 architecture Behavioral of Decidir_voltaje is
+
+signal V_reg : std_logic_vector (9 downto 0);
 
 begin
 
@@ -50,23 +53,23 @@ process(clk)
     
     if rising_edge(clk) then
         if rst = '1' then
-            V <= (others => '0');
+            V_reg <= (others => '0');
             Led <= '0';
         else
             if Switch = '0' then
-                V <= V0;
+                if enable = '1' then
+                    V_reg <= V0;
+                end if;
                 Led <= '1';
             else
-                V <= V1;
+                if enable = '1' then
+                    V_reg <= V1;
+                end if;
                 Led <= '0';
-            
             end if;
-        
         end if;
-    
     end if;
     
-    
     end process;
-
+V <= V_reg;
 end Behavioral;
