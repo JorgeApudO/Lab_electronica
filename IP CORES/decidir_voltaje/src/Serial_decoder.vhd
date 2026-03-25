@@ -36,14 +36,14 @@ entity Serial_decoder is
            clk : in STD_LOGIC;
            rst : in STD_LOGIC;
            enable : out STD_LOGIC;
-           V0 : out STD_LOGIC_VECTOR (11 downto 0);
-           V1 : out STD_LOGIC_VECTOR (11 downto 0));
+           V0 : out STD_LOGIC_VECTOR (9 downto 0);
+           V1 : out STD_LOGIC_VECTOR (9 downto 0));
 end Serial_decoder;
 
 architecture Behavioral of Serial_decoder is
 
-signal V0_reg : std_logic_vector (11 downto 0) := (others => '0');
-signal V1_reg : std_logic_vector (11 downto 0) := (others => '0');
+signal V0_reg : std_logic_vector (9 downto 0) := (others => '0');
+signal V1_reg : std_logic_vector (9 downto 0) := (others => '0');
 signal enable_reg : std_logic := '0';
 
 begin
@@ -51,7 +51,8 @@ begin
 process(clk)
 variable H1_v : std_logic;
 variable H2_v : std_logic;
-variable data_v : std_logic_vector (5 downto 0);
+variable H3_v : std_logic;
+variable data_v : std_logic_vector (4 downto 0);
 begin
 
 if rising_edge(clk) then
@@ -62,20 +63,23 @@ if rising_edge(clk) then
     else
         H1_v := Bus_in(7);
         H2_v := Bus_in(6);
-        data_v := Bus_in(5 downto 0);
+        H3_v := Bus_in(5);
+        data_v := Bus_in(4 downto 0);
         enable_reg <= '0';
         if H1_v = '0' then
             if H2_v = '0' then
-                V0_reg(11 downto 6) <= data_v;
+                V0_reg(9 downto 5) <= data_v;
             else
-                V0_reg(5 downto 0) <= data_v;
+                V0_reg(4 downto 0) <= data_v;
+                -- Añadir paridad ? 
             end if;
         
         else
             if H2_v = '0' then
-                V1_reg(11 downto 6) <= data_v;
+                V1_reg(9 downto 5) <= data_v;
             else
-                V1_reg(5 downto 0) <= data_v; 
+                V1_reg(4 downto 0) <= data_v;
+                -- Añadir paridad ? 
                 enable_reg <= '1';
             end if;
         end if;

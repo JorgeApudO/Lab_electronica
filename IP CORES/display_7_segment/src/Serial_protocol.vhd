@@ -7,6 +7,7 @@ entity Serial_protocol is
         clk        : in  std_logic;
         rst        : in  std_logic;
         serial_in  : in  std_logic;
+        data_valid : out std_logic;
         num_out    : out std_logic_vector(7 downto 0)
     );
 end Serial_protocol;
@@ -19,6 +20,7 @@ architecture Behavioral of Serial_protocol is
     signal bit_index    : natural range 0 to 7 := 0;
     signal serial_shift : std_logic_vector(7 downto 0) := (others => '0');
     signal data_reg     : std_logic_vector(7 downto 0) := (others => '0');
+    signal valid_reg    : std_logic := '0';
 
 begin
 
@@ -30,7 +32,9 @@ begin
                 bit_index <= 0;
                 serial_shift <= (others => '0');
                 data_reg <= (others => '0');
+                valid_reg <= '0';
             else
+                valid_reg <= '0';
 
                 case state is
 
@@ -54,6 +58,7 @@ begin
                     when STOP =>
                         if serial_in = '1' then
                             data_reg <= serial_shift;
+                            valid_reg <= '1';
                         end if;
 
                         state <= IDLE;
@@ -64,5 +69,6 @@ begin
     end process;
 
     num_out <= data_reg;
+    data_valid <= valid_reg;
 
 end Behavioral;

@@ -54,9 +54,9 @@ begin
                 -- solo actualiza V cuando llega un nuevo paquete completo
                 if enable = '1' then
                     if Switch = '0' then
-                        V_scaled := scale_12_to_10(unsigned(V0), 330);
+                        V_scaled := scale_12_to_10(unsigned(V0), 1000);
                     else
-                        V_scaled := scale_12_to_10(unsigned(V1), 1000);
+                        V_scaled := scale_12_to_10(unsigned(V1), 330);
                     end if;
 
                     V_reg <= std_logic_vector(V_scaled);
